@@ -158,7 +158,9 @@ def work(jid, req):
 @app.get("/")
 def root(): return {"service": "lipsync-wav2lip", "ok": True}
 @app.get("/health")
-def health(): return {"ok": True}
+def health():
+    has = hasattr(cv2, "CascadeClassifier")
+    return {"ok": has, "opencv": getattr(cv2, "__version__", "?"), "face_detector": has, "note": "" if has else "this OpenCV has no CascadeClassifier (OpenCV 5.x). Pin opencv-python-headless==4.10.0.84 and redeploy."}
 @app.post("/lipsync")
 def submit(req: dict, x_api_key: str = Header(None)):
     auth(x_api_key); jid = uuid.uuid4().hex; JOBS[jid] = {"status": "pending"}
